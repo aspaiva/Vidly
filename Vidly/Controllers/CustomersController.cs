@@ -10,15 +10,17 @@ using Vidly.Models;
 
 namespace Vidly.Controllers
 {
+    [Authorize]
     public class CustomersController : Controller
     {
         private VidlyDBContext db = new VidlyDBContext();
 
         // GET: Customers
-        public ActionResult Index()
+        public ViewResult Index()
         {
-            var customers = db.Customers.Include(c => c.MembershipType);
-            return View(customers.ToList());
+            //var customers = db.Customers.Include(c => c.MembershipType);
+            //return View(customers.ToList());
+            return View();
         }
 
         // GET: Customers/Details/5
@@ -52,6 +54,7 @@ namespace Vidly.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Roles = "Administrador")]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Name,BirthDate,IsSubscribedToNewsletter,MembershipTypeId")] Customer customer)
         {
@@ -84,7 +87,12 @@ namespace Vidly.Controllers
                 return HttpNotFound();
             }
             ViewBag.MembershipTypeId = new SelectList(db.MembershipTypes, "Id", "Id", customer.MembershipTypeId);
-            return View(customer);
+
+            var ncvm = new ViewModels.NewCustomerViewModel();
+            ncvm.Customer = customer;
+            ncvm.MembershipTypes = db.MembershipTypes.ToList();
+
+            return View(ncvm);
         }
 
         // POST: Customers/Edit/5

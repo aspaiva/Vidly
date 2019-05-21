@@ -21,5 +21,7 @@ namespace Vidly.DTO
         [Range(1, 4)]
         [MembershipOver18Only]
         public byte MembershipTypeId { get; set; }
+
+        public MembershipTypeDTO MembershipType { get; set; }
     }
 }
